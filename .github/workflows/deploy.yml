@@ -1,0 +1,58 @@
+# GitHub Pages Deployment Workflow
+# Deploys your Next.js static export to GitHub Pages automatically on push to main
+#
+# PREREQUISITES (one-time setup):
+# 1. Go to your repo → Settings → Pages
+# 2. Under "Build and deployment" → Source, select "GitHub Actions"
+# 3. Push to main — this workflow will build and deploy automatically
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Allows manual trigger from Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build static export
+        run: bun run build:static
+        env:
+          GITHUB_PAGES: "true"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
