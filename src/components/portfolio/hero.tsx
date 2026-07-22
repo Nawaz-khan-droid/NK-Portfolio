@@ -98,6 +98,47 @@ export function Hero() {
     >
       {/* Decorative floating elements — each carries a subtle AI/tech icon */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
+
+        {/* Full-width flowing sine wave — spans entire hero edge to edge */}
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center">
+          {/* We render a double-wide SVG and translate it left by 50% on repeat for a seamless loop */}
+          <motion.svg
+            viewBox="0 0 2880 160"
+            preserveAspectRatio="none"
+            className="w-[200%] h-28 sm:h-36"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          >
+            {/* Wave 1 — primary, stronger */}
+            <path
+              d="M0,80 C180,20 360,140 540,80 C720,20 900,140 1080,80 C1260,20 1440,140 1620,80 C1800,20 1980,140 2160,80 C2340,20 2520,140 2700,80 C2880,20 3060,140 3240,80"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              className="text-primary/25"
+            />
+            {/* Wave 2 — offset phase, thinner */}
+            <path
+              d="M0,80 C180,140 360,20 540,80 C720,140 900,20 1080,80 C1260,140 1440,20 1620,80 C1800,140 1980,20 2160,80 C2340,140 2520,20 2700,80 C2880,140 3060,20 3240,80"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+              className="text-primary/12"
+            />
+            {/* Wave 3 — slower, wider amplitude for depth */}
+            <path
+              d="M0,80 C360,10 720,150 1080,80 C1440,10 1800,150 2160,80 C2520,10 2880,150 3240,80"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.75"
+              strokeLinecap="round"
+              className="text-primary/10"
+            />
+          </motion.svg>
+        </div>
+
         <motion.div
           className="absolute top-[15%] left-[10%] w-16 h-16 sm:w-24 sm:h-24 rounded-2xl bg-primary/5 border border-primary/10 float-animation flex items-center justify-center"
           animate={{ rotate: [0, 5, -5, 0] }}
@@ -159,98 +200,16 @@ export function Hero() {
           </span>
         </motion.div>
 
-        {/* Name + bell curve animation */}
-        <div className="relative inline-block">
-          {/* Normal distribution SVG — draws in then pulses softly */}
-          <motion.svg
-            viewBox="0 0 500 90"
-            className="absolute inset-x-0 -top-6 w-full h-auto pointer-events-none"
-            aria-hidden="true"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.4 }}
-          >
-            {/* filled area under the curve */}
-            <motion.path
-              d="M 0,80 C 40,80 80,78 110,70 C 140,62 160,30 200,12 C 215,6 235,6 250,6 C 265,6 285,6 300,12 C 340,30 360,62 390,70 C 420,78 460,80 500,80 Z"
-              fill="currentColor"
-              className="text-primary/5"
-              initial={{ scaleY: 0, originY: 1 }}
-              animate={{ scaleY: 1 }}
-              transition={{ delay: 1.0, duration: 0.9, ease: "easeOut" }}
-            />
-            {/* the bell curve stroke itself */}
-            <motion.path
-              d="M 0,80 C 40,80 80,78 110,70 C 140,62 160,30 200,12 C 215,6 235,6 250,6 C 265,6 285,6 300,12 C 340,30 360,62 390,70 C 420,78 460,80 500,80"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              className="text-primary/50"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ delay: 0.9, duration: 1.4, ease: "easeInOut" }}
-            />
-            {/* centre dashed mean line (μ) */}
-            <motion.line
-              x1="250" y1="6" x2="250" y2="80"
-              stroke="currentColor"
-              strokeWidth="1"
-              strokeDasharray="3 3"
-              className="text-primary/30"
-              initial={{ scaleY: 0, originY: "80px" }}
-              animate={{ scaleY: 1 }}
-              transition={{ delay: 2.0, duration: 0.5, ease: "easeOut" }}
-            />
-            {/* μ label */}
-            <motion.text
-              x="256" y="20"
-              fontSize="10"
-              fontFamily="monospace"
-              className="fill-primary/40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.4, duration: 0.4 }}
-            >
-              μ
-            </motion.text>
-            {/* σ markers */}
-            {[-1, 1].map((s, i) => (
-              <motion.g key={s}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.6 + i * 0.15, duration: 0.3 }}
-              >
-                <line
-                  x1={250 + s * 95} y1="72"
-                  x2={250 + s * 95} y2="80"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                  className="text-primary/30"
-                />
-                <text
-                  x={250 + s * 95 + (s > 0 ? 4 : -14)} y="88"
-                  fontSize="8"
-                  fontFamily="monospace"
-                  className="fill-primary/30"
-                >
-                  {s > 0 ? "+σ" : "-σ"}
-                </text>
-              </motion.g>
-            ))}
-          </motion.svg>
-
-          {/* Name */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative z-10 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground"
-          >
-            Nawaz{" "}
-            <span className="gradient-text">Khan</span>
-          </motion.h1>
-        </div>
+        {/* Name */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground"
+        >
+          Nawaz{" "}
+          <span className="gradient-text">Khan</span>
+        </motion.h1>
 
         {/* Typewriter Title */}
         <motion.p
