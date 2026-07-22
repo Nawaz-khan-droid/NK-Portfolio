@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ArrowDown, FileText, Github, Linkedin, Brain, Code2, Cpu, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import { WaveCanvas } from "./wave-canvas"
 
 // Read basePath from env — set in next.config.ts, empty string locally
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ""
@@ -99,45 +100,8 @@ export function Hero() {
       {/* Decorative floating elements — each carries a subtle AI/tech icon */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
 
-        {/* Full-width flowing sine wave — spans entire hero edge to edge */}
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center">
-          {/* We render a double-wide SVG and translate it left by 50% on repeat for a seamless loop */}
-          <motion.svg
-            viewBox="0 0 2880 160"
-            preserveAspectRatio="none"
-            className="w-[200%] h-28 sm:h-36"
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-          >
-            {/* Wave 1 — primary, stronger */}
-            <path
-              d="M0,80 C180,20 360,140 540,80 C720,20 900,140 1080,80 C1260,20 1440,140 1620,80 C1800,20 1980,140 2160,80 C2340,20 2520,140 2700,80 C2880,20 3060,140 3240,80"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              className="text-primary/25"
-            />
-            {/* Wave 2 — offset phase, thinner */}
-            <path
-              d="M0,80 C180,140 360,20 540,80 C720,140 900,20 1080,80 C1260,140 1440,20 1620,80 C1800,140 1980,20 2160,80 C2340,140 2520,20 2700,80 C2880,140 3060,20 3240,80"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-              strokeLinecap="round"
-              className="text-primary/12"
-            />
-            {/* Wave 3 — slower, wider amplitude for depth */}
-            <path
-              d="M0,80 C360,10 720,150 1080,80 C1440,10 1800,150 2160,80 C2520,10 2880,150 3240,80"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.75"
-              strokeLinecap="round"
-              className="text-primary/10"
-            />
-          </motion.svg>
-        </div>
+        {/* Full-width GPU-accelerated wave — canvas for smooth 60fps */}
+        <WaveCanvas />
 
         <motion.div
           className="absolute top-[15%] left-[10%] w-16 h-16 sm:w-24 sm:h-24 rounded-2xl bg-primary/5 border border-primary/10 float-animation flex items-center justify-center"
