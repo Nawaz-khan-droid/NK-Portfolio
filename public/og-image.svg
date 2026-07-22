@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#090d16"/>
+  
+  <!-- Subtle grid pattern -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#10b981" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Glowing background blur circle -->
+  <circle cx="950" cy="180" r="220" fill="#10b981" fill-opacity="0.08" filter="blur(60px)"/>
+
+  <!-- NK. Logo Badge -->
+  <g transform="translate(100, 100)">
+    <rect width="90" height="90" rx="20" fill="#131b2e" stroke="#10b981" stroke-opacity="0.3" stroke-width="2"/>
+    <text x="45" y="55" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="40" fill="#ffffff" letter-spacing="-2">NK<tspan fill="#10b981">.</tspan></text>
+  </g>
+
+  <!-- Title & Name -->
+  <text x="100" y="270" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="64" fill="#ffffff">Nawaz <tspan fill="url(#textGrad)">Khan</tspan></text>
+  
+  <!-- Role -->
+  <text x="100" y="340" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="34" fill="#94a3b8">AI &amp; Machine Learning Engineer</text>
+  
+  <!-- Specialties Badges -->
+  <text x="100" y="400" font-family="system-ui, -apple-system, sans-serif" font-weight="500" font-size="22" fill="#10b981">RAG Systems  ·  Agentic Workflows  ·  Voice AI  ·  Python Automation</text>
+
+  <!-- URL footer -->
+  <rect x="100" y="470" width="460" height="50" rx="25" fill="#131b2e" stroke="#10b981" stroke-opacity="0.3"/>
+  <text x="130" y="502" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="20" fill="#ffffff">nawaz-khan-droid.github.io/NK-Portfolio</text>
+</svg>
