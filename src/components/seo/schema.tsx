@@ -1,7 +1,7 @@
 export function SeoSchemas() {
   const siteUrl = "https://nawaz-khan-droid.github.io/NK-Portfolio"
   const logoUrl = `${siteUrl}/logo.svg`
-  const ogImageUrl = `${siteUrl}/og-image.svg`
+  const ogImageUrl = `${siteUrl}/og-image.png`
 
   const websiteSchema = {
     "@context": "https://schema.org",
@@ -11,7 +11,7 @@ export function SeoSchemas() {
     name: "Nawaz Khan — AI & Machine Learning Engineer Portfolio",
     alternateName: ["NK Portfolio", "Nawaz Khan AI Portfolio"],
     description:
-      "Official portfolio of Nawaz Khan showcasing AI & ML projects, RAG systems, Agentic workflows, and Python automation.",
+      "Portfolio of Nawaz Khan — AI & Machine Learning Engineer specializing in RAG systems, agentic workflows, voice AI assistants, and automated AI solutions.",
     publisher: {
       "@type": "Person",
       name: "Nawaz Khan",
@@ -58,7 +58,7 @@ export function SeoSchemas() {
     "@type": "ProfilePage",
     "@id": `${siteUrl}/#profilepage`,
     url: siteUrl,
-    name: "Nawaz Khan — AI & ML Portfolio Preview",
+    name: "Nawaz Khan | AI & Machine Learning Engineer Portfolio",
     mainEntity: {
       "@id": `${siteUrl}/#person`,
     },
