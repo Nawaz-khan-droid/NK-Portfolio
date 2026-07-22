@@ -7,6 +7,7 @@ import { EducationTimeline } from "@/components/portfolio/timeline"
 import { Skills } from "@/components/portfolio/skills"
 import { Projects } from "@/components/portfolio/projects"
 import { Experience } from "@/components/portfolio/experience"
+import { Faq } from "@/components/portfolio/faq"
 import { Connect } from "@/components/portfolio/connect"
 import { Footer } from "@/components/portfolio/footer"
 import { Chatbot } from "@/components/portfolio/chatbot"
@@ -22,6 +23,7 @@ export default function Home() {
         <Skills />
         <Projects />
         <Experience />
+        <Faq />
         <Connect />
       </main>
       <Footer />
@@ -30,4 +32,5 @@ export default function Home() {
     </div>
   )
 }
+
 
