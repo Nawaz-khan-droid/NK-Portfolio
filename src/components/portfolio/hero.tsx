@@ -3,12 +3,33 @@
 import { motion } from "framer-motion"
 import { ArrowDown, FileText, Github, Linkedin, Brain, Code2, Cpu, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/hooks/use-toast"
 
 // Read basePath from env — set in next.config.ts, empty string locally
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ""
 const RESUME_URL = `${BASE_PATH}/resume.pdf`
 
 export function Hero() {
+  const { toast } = useToast()
+
+  const handleResumeClick = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    try {
+      const res = await fetch(RESUME_URL, { method: "HEAD" })
+      if (res.ok) {
+        window.open(RESUME_URL, "_blank", "noopener,noreferrer")
+      } else {
+        toast({
+          title: "📄 Resume File Notice",
+          description: "Resume is currently being updated! Please reach out via Email or LinkedIn in the meantime.",
+        })
+      }
+    } catch {
+      // Fallback if fetch is blocked or CORS error occurs
+      window.open(RESUME_URL, "_blank", "noopener,noreferrer")
+    }
+  }
+
   return (
     <section
       id="hero"
@@ -117,17 +138,10 @@ export function Hero() {
             size="lg"
             variant="outline"
             className="gap-2 px-6"
-            asChild
+            onClick={handleResumeClick}
           >
-            <a
-              href={RESUME_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Download Resume (opens in new tab)"
-            >
-              <FileText className="h-4 w-4" aria-hidden="true" />
-              View Resume
-            </a>
+            <FileText className="h-4 w-4" aria-hidden="true" />
+            View Resume
           </Button>
         </motion.div>
 

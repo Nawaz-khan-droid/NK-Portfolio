@@ -1,10 +1,12 @@
 "use client"
 
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { SectionHeading } from "./section-heading"
 import { ScrollReveal, StaggerContainer, StaggerItem } from "./scroll-reveal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ExternalLink, Github, MonitorSmartphone, Search, Brain, Briefcase, FileText, Headphones } from "lucide-react"
+import { ExternalLink, Github, MonitorSmartphone, Search, Brain, Briefcase, FileText, Headphones, Play, X } from "lucide-react"
 
 interface Project {
   title: string
@@ -14,6 +16,7 @@ interface Project {
   github: string
   demo?: string
   demoLabel?: string
+  embedUrl?: string
   icon: React.ElementType
   category: string
 }
@@ -45,6 +48,9 @@ const projects: Project[] = [
     highlights: ["Dual personas with cross-session memory", "20 tools: weather, search, email, reminders", "Cloud-first + local ONNX fallback for resilience"],
     tech: ["Python", "FastAPI", "React", "Groq", "Deepgram", "LiveKit"],
     github: "https://github.com/Nawaz-khan-droid/Personal-AI-Assistant",
+    demo: "https://www.linkedin.com/posts/nawaz-n-khan_ai-voiceai-react-activity-7485063589628645376-xxxx",
+    demoLabel: "Watch Demo",
+    embedUrl: "https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7485063589628645376?compact=1",
     icon: MonitorSmartphone,
     category: "AI / Voice",
   },
@@ -78,6 +84,8 @@ const projects: Project[] = [
 ]
 
 export function Projects() {
+  const [activeEmbed, setActiveEmbed] = useState<{ title: string; embedUrl: string; linkedinUrl?: string } | null>(null)
+
   return (
     <section id="projects" className="py-20 md:py-28 bg-muted/30" aria-label="Projects portfolio">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -134,20 +142,93 @@ export function Projects() {
                       Source
                     </a>
                   </Button>
-                  {project.demo && (
+
+                  {/* Embed modal trigger or direct demo link */}
+                  {project.embedUrl ? (
+                    <Button
+                      size="sm"
+                      className="gap-1.5 text-xs h-8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                      onClick={() => setActiveEmbed({ title: project.title, embedUrl: project.embedUrl!, linkedinUrl: project.demo })}
+                    >
+                      <Play className="h-3 w-3 fill-current" aria-hidden="true" />
+                      {project.demoLabel || "Watch Demo"}
+                    </Button>
+                  ) : project.demo ? (
                     <Button size="sm" className="gap-1.5 text-xs h-8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" asChild>
                       <a href={project.demo} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} live demo (opens in new tab)`}>
                         <ExternalLink className="h-3 w-3" aria-hidden="true" />
                         {project.demoLabel || "Demo"}
                       </a>
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </StaggerItem>
           ))}
         </StaggerContainer>
       </div>
+
+      {/* Embedded Demo Video Modal */}
+      <AnimatePresence>
+        {activeEmbed && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-background/80 backdrop-blur-sm"
+              onClick={() => setActiveEmbed(null)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-2xl rounded-xl border border-border bg-card shadow-2xl overflow-hidden z-10 p-4 sm:p-6"
+            >
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-foreground">{activeEmbed.title}</h3>
+                  <p className="text-xs text-muted-foreground">Demo Video</p>
+                </div>
+                <button
+                  onClick={() => setActiveEmbed(null)}
+                  className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  aria-label="Close demo video"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* LinkedIn Compact Embed Container */}
+              <div className="relative w-full rounded-lg overflow-hidden border border-border bg-muted/20 min-h-[399px] flex items-center justify-center">
+                <iframe
+                  src={activeEmbed.embedUrl}
+                  height="399"
+                  width="100%"
+                  className="w-full border-0 rounded-lg"
+                  allowFullScreen
+                  title={`${activeEmbed.title} LinkedIn Video Demo`}
+                />
+              </div>
+
+              <div className="mt-4 flex items-center justify-end gap-2">
+                <Button variant="ghost" size="sm" onClick={() => setActiveEmbed(null)}>
+                  Close
+                </Button>
+                {activeEmbed.linkedinUrl && (
+                  <Button size="sm" variant="outline" className="gap-1.5 text-xs" asChild>
+                    <a href={activeEmbed.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Open post on LinkedIn
+                    </a>
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   )
 }
+
