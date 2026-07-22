@@ -19,9 +19,9 @@ const BASE_URL = "https://nawaz-khan-droid.github.io/NK-Portfolio";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
-  title: "Nawaz Khan — AI & Machine Learning Engineer",
+  title: "Nawaz Khan | AI & Machine Learning Engineer Portfolio",
   description:
-    "Portfolio of Nawaz Khan — AI & Machine Learning Engineer specializing in RAG systems, agentic workflows, voice AI assistants, and practical automation solutions.",
+    "Portfolio of Nawaz Khan — AI & Machine Learning Engineer specializing in RAG systems, agentic workflows, voice AI assistants, and automated AI solutions.",
   keywords: [
     "AI Engineer",
     "Machine Learning",
@@ -46,28 +46,29 @@ export const metadata: Metadata = {
     canonical: "./",
   },
   openGraph: {
-    title: "Nawaz Khan — AI & Machine Learning Engineer",
+    title: "Nawaz Khan | AI & Machine Learning Engineer Portfolio",
     description:
-      "Building AI-powered applications with a focus on RAG systems, agentic workflows, voice AI, and practical automation.",
+      "Portfolio of Nawaz Khan — AI & Machine Learning Engineer specializing in RAG systems, agentic workflows, voice AI assistants, and automated AI solutions.",
     url: BASE_URL,
     siteName: "Nawaz Khan Portfolio",
     locale: "en_US",
     type: "website",
     images: [
       {
-        url: "/og-image.svg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Nawaz Khan — AI & Machine Learning Engineer Portfolio",
+        type: "image/png",
+        alt: "Nawaz Khan | AI & Machine Learning Engineer Portfolio",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Nawaz Khan — AI & ML Engineer",
+    title: "Nawaz Khan | AI & Machine Learning Engineer Portfolio",
     description:
-      "Building AI-powered applications with a focus on RAG systems, agentic workflows, voice AI, and practical automation.",
-    images: ["/og-image.svg"],
+      "Portfolio of Nawaz Khan — AI & Machine Learning Engineer specializing in RAG systems, agentic workflows, voice AI assistants, and automated AI solutions.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
