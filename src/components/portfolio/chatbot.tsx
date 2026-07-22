@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MessageCircle, X, Send, Bot } from "lucide-react"
+import { MessageCircle, X, Send, Bot, Mail, Linkedin } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -11,14 +11,16 @@ interface Message {
   id: string
   role: "bot" | "user"
   text: string
+  isLeadCard?: boolean
 }
 
 interface Rule {
   patterns: string[]
   response: string
+  isLeadCard?: boolean
 }
 
-// ─── Knowledge base (deterministic rule matching) ─────────────────────────────
+// ─── Knowledge base ───────────────────────────────────────────────────────────
 
 const RULES: Rule[] = [
   // Greetings
@@ -136,15 +138,17 @@ const RULES: Rule[] = [
   // Contact
   {
     patterns: ["contact", "email", "reach out", "get in touch", "message", "mail"],
+    isLeadCard: true,
     response:
-      "Reach Nawaz at:\n📧 nawazkhanwork@gmail.com\n💼 linkedin.com/in/nawaz-n-khan\n🐙 github.com/Nawaz-khan-droid\n\nOr use the Connect section on this page! 👇",
+      "Reach Nawaz at:\n📧 nawazkhanwork@gmail.com\n💼 linkedin.com/in/nawaz-n-khan\n🐙 github.com/Nawaz-khan-droid\n\nOr click below to send a direct message! 👇",
   },
 
   // LinkedIn
   {
     patterns: ["linkedin"],
+    isLeadCard: true,
     response:
-      "LinkedIn: linkedin.com/in/nawaz-n-khan 💼\nHe's actively open to opportunities in AI, ML, and Data Analytics!",
+      "LinkedIn: linkedin.com/in/nawaz-n-khan 💼\nHe's actively open to opportunities in AI, ML, and Data Analytics! Click below to open his profile or send a message.",
   },
 
   // GitHub
@@ -154,11 +158,12 @@ const RULES: Rule[] = [
       "GitHub: github.com/Nawaz-khan-droid 🐙\nAll 6 featured projects are open source — RAG systems, voice AI, fact verification, and more!",
   },
 
-  // Hiring / Availability
+  // Hiring / Availability / Recruiter Lead
   {
-    patterns: ["hire", "hiring", "open to hire", "open to work", "available", "opportunity", "job", "position", "role", "recruit", "looking for work", "career"],
+    patterns: ["hire", "hiring", "open to hire", "open to work", "available", "opportunity", "job", "position", "role", "recruit", "looking for work", "career", "interview", "offer", "recruiter"],
+    isLeadCard: true,
     response:
-      "Yes! Nawaz is actively looking for entry-level roles in:\n• 🤖 AI Engineering\n• 📊 Machine Learning\n• 📈 Data Analytics\n\nAvailable immediately. Reach out at nawazkhanwork@gmail.com or via LinkedIn! 🚀",
+      "Yes! 🚀 Nawaz is actively looking for entry-level roles in:\n• 🤖 AI Engineering\n• 📊 Machine Learning\n• 📈 Data Analytics\n\nAvailable immediately. You can send him a direct email or LinkedIn DM using the buttons below! ⚡",
   },
 
   // Data Science / Analytics
@@ -246,22 +251,28 @@ function calculateIDF(term: string): number {
   return Math.log((N - nq + 0.5) / (nq + 0.5) + 1)
 }
 
-function getResponse(input: string): string {
+function getResponse(input: string): { text: string; isLeadCard?: boolean } {
   const norm = input.toLowerCase().trim()
-  if (!norm) return "Please type something! 😊"
+  if (!norm) return { text: "Please type something! 😊" }
+
+  // Check if input contains an email address (recruiter submitting contact info)
+  const emailMatch = norm.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
+  if (emailMatch) {
+    return {
+      text: `🎉 Thank you! I've noted your email (${emailMatch[0]}). You can also connect with Nawaz directly below via Email or LinkedIn DM!`,
+      isLeadCard: true,
+    }
+  }
 
   // 1. First priority: Exact Word-Boundary Pattern Match (\b)
-  // This prevents false substring triggers (e.g. "hi" inside "hire")
   let bestExactRule: Rule | null = null
   let maxMatchedLen = 0
 
   for (const rule of RULES) {
     for (const pattern of rule.patterns) {
       const cleanPattern = pattern.toLowerCase()
-      // Word boundary regex check
       const regex = new RegExp(`\\b${escapeRegExp(cleanPattern)}\\b`, "i")
       if (regex.test(norm)) {
-        // Prefer longer/more specific pattern matches (e.g. "open to hire" over "hire")
         if (cleanPattern.length > maxMatchedLen) {
           maxMatchedLen = cleanPattern.length
           bestExactRule = rule
@@ -271,12 +282,12 @@ function getResponse(input: string): string {
   }
 
   if (bestExactRule) {
-    return bestExactRule.response
+    return { text: bestExactRule.response, isLeadCard: bestExactRule.isLeadCard }
   }
 
   // 2. Second priority: BM25 Term Relevance Scoring
   const queryTokens = tokenize(norm)
-  if (queryTokens.length === 0) return FALLBACKS[0]
+  if (queryTokens.length === 0) return { text: FALLBACKS[0] }
 
   let bestScore = -1
   let bestBM25Rule: Rule | null = null
@@ -284,17 +295,13 @@ function getResponse(input: string): string {
   for (const rule of PROCESSED_RULES) {
     let score = 0
     const docLen = rule.docTokens.length
-
-    // Count term frequencies in rule patterns specifically (given double weight)
     const patternTokens = tokenize(rule.patterns.join(" "))
 
     for (const qToken of queryTokens) {
       const idf = calculateIDF(qToken)
       if (idf <= 0) continue
 
-      // Frequency in full doc tokens
       const fDoc = rule.docTokens.filter((t) => t === qToken).length
-      // Frequency boost if it appears in exact pattern list
       const fPattern = patternTokens.filter((t) => t === qToken).length * 2.5
 
       const tf = fDoc + fPattern
@@ -312,11 +319,11 @@ function getResponse(input: string): string {
 
   // Threshold check for BM25 score relevance
   if (bestBM25Rule && bestScore > 0.4) {
-    return bestBM25Rule.response
+    return { text: bestBM25Rule.response, isLeadCard: bestBM25Rule.isLeadCard }
   }
 
   // 3. Fallback: cycle deterministically on input length
-  return FALLBACKS[norm.length % FALLBACKS.length]
+  return { text: FALLBACKS[norm.length % FALLBACKS.length] }
 }
 
 // ─── Quick reply chips ────────────────────────────────────────────────────────
@@ -373,10 +380,12 @@ export function Chatbot() {
     // Natural-feeling delay: 600–900ms
     const delay = 600 + (trimmed.length % 4) * 75
     const timer = setTimeout(() => {
+      const resp = getResponse(trimmed)
       const botMsg: Message = {
         id: `b-${Date.now()}`,
         role: "bot",
-        text: getResponse(trimmed),
+        text: resp.text,
+        isLeadCard: resp.isLeadCard,
       }
       setMessages((prev) => [...prev, botMsg])
       setTyping(false)
@@ -467,6 +476,35 @@ export function Chatbot() {
                       )}
                     >
                       {msg.text}
+
+                      {/* Recruiter Lead Generation Action Card */}
+                      {msg.isLeadCard && (
+                        <div className="mt-3 pt-2.5 border-t border-border/60 flex flex-col gap-2">
+                          <span className="text-[10px] font-semibold text-primary uppercase tracking-wider">
+                            ⚡ Quick Recruiter Actions
+                          </span>
+                          <div className="flex flex-col gap-1.5">
+                            <a
+                              href="mailto:nawazkhanwork@gmail.com?subject=Job%20Opportunity%20%7C%20Portfolio%20Lead&body=Hi%20Nawaz,%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20connect%20regarding%20an%20opportunity..."
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-xs"
+                            >
+                              <Mail className="w-3.5 h-3.5" />
+                              Send Direct Email
+                            </a>
+                            <a
+                              href="https://in.linkedin.com/in/nawaz-n-khan"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-background text-foreground hover:bg-accent border border-border transition-colors"
+                            >
+                              <Linkedin className="w-3.5 h-3.5 text-blue-500" />
+                              LinkedIn DM
+                            </a>
+                          </div>
+                        </div>
+                      )}
                     </motion.div>
                   </div>
                 ))}
