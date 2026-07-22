@@ -1,6 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { ArrowDown, FileText, Github, Linkedin, Brain, Code2, Cpu, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
@@ -9,8 +10,67 @@ import { useToast } from "@/hooks/use-toast"
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ""
 const RESUME_URL = `${BASE_PATH}/resume.pdf`
 
+const PHRASES = [
+  "AI & ML Engineer",
+  "RAG Systems Builder",
+  "Agentic AI Developer",
+  "Python Developer",
+]
+
+const STATUSES = [
+  "Open to Work",
+  "Open to AI Internships",
+]
+
 export function Hero() {
   const { toast } = useToast()
+
+  // Status Badge vertical swap state
+  const [statusIndex, setStatusIndex] = useState(0)
+
+  useEffect(() => {
+    const statusInterval = setInterval(() => {
+      setStatusIndex((prev) => (prev + 1) % STATUSES.length)
+    }, 3500)
+    return () => clearInterval(statusInterval)
+  }, [])
+
+  // Typewriter animation state
+  const [phraseIndex, setPhraseIndex] = useState(0)
+  const [currentText, setCurrentText] = useState("")
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    const targetPhrase = PHRASES[phraseIndex]
+    let timer: NodeJS.Timeout
+
+    if (!isDeleting) {
+      if (currentText.length < targetPhrase.length) {
+        // Typing: 65ms / char
+        timer = setTimeout(() => {
+          setCurrentText(targetPhrase.slice(0, currentText.length + 1))
+        }, 65)
+      } else {
+        // Pause: 2.2s (2200ms)
+        timer = setTimeout(() => {
+          setIsDeleting(true)
+        }, 2200)
+      }
+    } else {
+      if (currentText.length > 0) {
+        // Deleting: 38ms / char
+        timer = setTimeout(() => {
+          setCurrentText(targetPhrase.slice(0, currentText.length - 1))
+        }, 38)
+      } else {
+        // Transition to next phrase
+        setIsDeleting(false)
+        setPhraseIndex((prev) => (prev + 1) % PHRASES.length)
+      }
+    }
+
+    return () => clearTimeout(timer)
+  }, [currentText, isDeleting, phraseIndex])
 
   const handleResumeClick = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -69,7 +129,7 @@ export function Hero() {
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
-        {/* Status badge */}
+        {/* Status badge with Vertical Text Swap */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -77,11 +137,24 @@ export function Hero() {
           className="mb-6"
         >
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs sm:text-sm font-medium">
-            <span className="relative flex h-2 w-2" aria-hidden="true">
+            <span className="relative flex h-2 w-2 flex-shrink-0" aria-hidden="true">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            Open to Work
+            <span className="relative inline-block overflow-hidden h-[1.3em] min-w-[145px] text-left">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={STATUSES[statusIndex]}
+                  initial={{ y: 14, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -14, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  className="absolute inset-0 whitespace-nowrap"
+                >
+                  {STATUSES[statusIndex]}
+                </motion.span>
+              </AnimatePresence>
+            </span>
           </span>
         </motion.div>
 
@@ -96,14 +169,19 @@ export function Hero() {
           <span className="gradient-text">Khan</span>
         </motion.h1>
 
-        {/* Title */}
+        {/* Typewriter Title */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-4 text-lg sm:text-xl md:text-2xl text-muted-foreground font-medium"
+          className="mt-4 text-lg sm:text-xl md:text-2xl text-muted-foreground font-medium flex items-center justify-center min-h-[2.25rem]"
         >
-          AI &amp; Machine Learning Engineer
+          <span className="inline-flex items-center justify-center whitespace-nowrap">
+            <span>{currentText}</span>
+            <span className="animate-blink font-mono font-bold text-primary ml-0.5 select-none" aria-hidden="true">
+              |
+            </span>
+          </span>
         </motion.p>
 
         {/* One-line tagline */}
