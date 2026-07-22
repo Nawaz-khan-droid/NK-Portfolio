@@ -1,4 +1,3 @@
-"use client"
 
 import { Navbar } from "@/components/portfolio/navbar"
 import { Hero } from "@/components/portfolio/hero"
