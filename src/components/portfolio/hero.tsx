@@ -37,7 +37,7 @@ export function Hero() {
 
   // Typewriter animation state
   const [phraseIndex, setPhraseIndex] = useState(0)
-  const [currentText, setCurrentText] = useState("")
+  const [currentText, setCurrentText] = useState(PHRASES[0])
   const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
@@ -141,7 +141,7 @@ export function Hero() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            <span className="relative inline-block overflow-hidden h-[1.3em] min-w-[145px] text-left">
+            <span className="relative inline-block overflow-hidden h-[1.3em] min-w-[165px] text-left">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={STATUSES[statusIndex]}
