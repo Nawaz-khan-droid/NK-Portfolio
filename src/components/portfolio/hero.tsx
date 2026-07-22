@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ArrowDown, FileText, Github, Linkedin, Brain, Code2, Cpu, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
-import { WaveCanvas } from "./wave-canvas"
 
 // Read basePath from env — set in next.config.ts, empty string locally
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ""
@@ -100,8 +99,6 @@ export function Hero() {
       {/* Decorative floating elements — each carries a subtle AI/tech icon */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
 
-        {/* Full-width GPU-accelerated wave — canvas for smooth 60fps */}
-        <WaveCanvas />
 
         <motion.div
           className="absolute top-[15%] left-[10%] w-16 h-16 sm:w-24 sm:h-24 rounded-2xl bg-primary/5 border border-primary/10 float-animation flex items-center justify-center"
