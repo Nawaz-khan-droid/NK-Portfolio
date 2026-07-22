@@ -81,9 +81,9 @@ export function Faq() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <SectionHeading
-          title="Voice-Search FAQs"
-          subtitle="Frequently asked questions optimized for natural voice queries, search engines, and quick assistance."
-          icon={<Mic className="w-5 h-5 text-primary" aria-hidden="true" />}
+          title="Frequently Asked Questions"
+          subtitle="Find quick answers to common questions about Nawaz's background, AI projects, technical skills, and availability."
+          icon={<HelpCircle className="w-5 h-5 text-primary" aria-hidden="true" />}
         />
 
         <div className="mt-12 space-y-4">
@@ -128,20 +128,6 @@ export function Faq() {
                     >
                       <div className="px-6 pb-6 pt-1 text-muted-foreground text-sm sm:text-base border-t border-border/40 leading-relaxed">
                         <p>{faq.answer}</p>
-
-                        <div className="mt-3 flex flex-wrap items-center gap-2 pt-2">
-                          <span className="text-xs font-medium text-muted-foreground/70 flex items-center gap-1">
-                            <Sparkles className="w-3 h-3 text-primary/60" /> Voice Keywords:
-                          </span>
-                          {faq.voiceKeywords.map((kw) => (
-                            <span
-                              key={kw}
-                              className="px-2 py-0.5 rounded-md bg-primary/5 border border-primary/10 text-primary text-[11px]"
-                            >
-                              "{kw}"
-                            </span>
-                          ))}
-                        </div>
                       </div>
                     </motion.div>
                   )}
