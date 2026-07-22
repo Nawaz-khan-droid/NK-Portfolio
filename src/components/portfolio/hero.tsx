@@ -97,7 +97,7 @@ export function Hero() {
       className="relative min-h-screen flex items-center justify-center hero-gradient grid-pattern noise-overlay overflow-hidden"
     >
       {/* Decorative floating elements — each carries a subtle AI/tech icon */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
         <motion.div
           className="absolute top-[15%] left-[10%] w-16 h-16 sm:w-24 sm:h-24 rounded-2xl bg-primary/5 border border-primary/10 float-animation flex items-center justify-center"
           animate={{ rotate: [0, 5, -5, 0] }}
@@ -119,12 +119,13 @@ export function Hero() {
         >
           <Cpu className="w-4 h-4 sm:w-6 sm:h-6 text-primary/20" />
         </motion.div>
+        {/* Sparkles — hidden on xs to avoid badge overlap */}
         <motion.div
-          className="absolute top-[25%] right-[18%] w-6 h-6 sm:w-10 sm:h-10 rounded-md bg-primary/5 border border-primary/10 flex items-center justify-center"
+          className="absolute top-[25%] right-[18%] hidden sm:flex w-10 h-10 rounded-md bg-primary/5 border border-primary/10 items-center justify-center"
           animate={{ y: [0, -12, 0], x: [0, 5, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
-          <Sparkles className="w-3 h-3 sm:w-5 sm:h-5 text-primary/20" />
+          <Sparkles className="w-5 h-5 text-primary/20" />
         </motion.div>
       </div>
 
@@ -136,12 +137,12 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mb-6"
         >
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs sm:text-sm font-medium">
+          <span className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs sm:text-sm font-medium max-w-[90vw]">
             <span className="relative flex h-2 w-2 flex-shrink-0" aria-hidden="true">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            <span className="relative inline-block overflow-hidden h-[1.3em] min-w-[165px] text-left">
+            <span className="relative inline-block overflow-hidden h-[1.3em] min-w-[130px] sm:min-w-[165px] text-left">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={STATUSES[statusIndex]}
