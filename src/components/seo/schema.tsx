@@ -1,7 +1,7 @@
 export function SeoSchemas() {
   const siteUrl = "https://nawaz-khan-droid.github.io/NK-Portfolio"
   const logoUrl = `${siteUrl}/logo.svg`
-  const ogImageUrl = `${siteUrl}/og-image.png`
+  const ogImageUrl = `${siteUrl}/og-image.jpg`
 
   const websiteSchema = {
     "@context": "https://schema.org",
