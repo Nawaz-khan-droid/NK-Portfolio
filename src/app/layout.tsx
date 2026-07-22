@@ -55,10 +55,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.png",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        type: "image/png",
+        type: "image/jpeg",
         alt: "Nawaz Khan | AI & Machine Learning Engineer Portfolio",
       },
     ],
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     title: "Nawaz Khan | AI & Machine Learning Engineer Portfolio",
     description:
       "Portfolio of Nawaz Khan — AI & Machine Learning Engineer specializing in RAG systems, agentic workflows, voice AI assistants, and automated AI solutions.",
-    images: ["/og-image.png"],
+    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
