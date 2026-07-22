@@ -156,7 +156,7 @@ const RULES: Rule[] = [
 
   // Hiring / Availability
   {
-    patterns: ["hire", "hiring", "available", "open to work", "looking for", "opportunity", "position", "job", "role", "recruit"],
+    patterns: ["hire", "hiring", "open to hire", "open to work", "available", "opportunity", "job", "position", "role", "recruit", "looking for work", "career"],
     response:
       "Yes! Nawaz is actively looking for entry-level roles in:\n• 🤖 AI Engineering\n• 📊 Machine Learning\n• 📈 Data Analytics\n\nAvailable immediately. Reach out at nawazkhanwork@gmail.com or via LinkedIn! 🚀",
   },
@@ -204,19 +204,118 @@ const FALLBACKS = [
   "Not sure about that one. Try: 'What are his skills?', 'Show projects', or 'How to contact?' — I handle those well! 💡",
 ]
 
-// ─── Matching engine ──────────────────────────────────────────────────────────
+// ─── BM25 Retrieval & Word-Boundary Engine ─────────────────────────────────────
+
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+// Tokenize text into words
+function tokenize(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+}
+
+// BM25 calculation parameters
+const K1 = 1.2
+const B = 0.75
+
+interface ProcessedRule extends Rule {
+  id: number
+  docTokens: string[]
+}
+
+const PROCESSED_RULES: ProcessedRule[] = RULES.map((rule, idx) => ({
+  ...rule,
+  id: idx,
+  docTokens: tokenize(rule.patterns.join(" ") + " " + rule.response),
+}))
+
+// Precalculate document lengths and average length
+const avgDocLength =
+  PROCESSED_RULES.reduce((acc, r) => acc + r.docTokens.length, 0) / PROCESSED_RULES.length || 1
+
+// Calculate Inverse Document Frequency (IDF) for a term
+function calculateIDF(term: string): number {
+  const N = PROCESSED_RULES.length
+  const nq = PROCESSED_RULES.filter((r) => r.docTokens.includes(term)).length
+  if (nq === 0) return 0
+  return Math.log((N - nq + 0.5) / (nq + 0.5) + 1)
+}
 
 function getResponse(input: string): string {
   const norm = input.toLowerCase().trim()
   if (!norm) return "Please type something! 😊"
 
+  // 1. First priority: Exact Word-Boundary Pattern Match (\b)
+  // This prevents false substring triggers (e.g. "hi" inside "hire")
+  let bestExactRule: Rule | null = null
+  let maxMatchedLen = 0
+
   for (const rule of RULES) {
-    if (rule.patterns.some((p) => norm.includes(p))) {
-      return rule.response
+    for (const pattern of rule.patterns) {
+      const cleanPattern = pattern.toLowerCase()
+      // Word boundary regex check
+      const regex = new RegExp(`\\b${escapeRegExp(cleanPattern)}\\b`, "i")
+      if (regex.test(norm)) {
+        // Prefer longer/more specific pattern matches (e.g. "open to hire" over "hire")
+        if (cleanPattern.length > maxMatchedLen) {
+          maxMatchedLen = cleanPattern.length
+          bestExactRule = rule
+        }
+      }
     }
   }
 
-  // Deterministic fallback based on input length
+  if (bestExactRule) {
+    return bestExactRule.response
+  }
+
+  // 2. Second priority: BM25 Term Relevance Scoring
+  const queryTokens = tokenize(norm)
+  if (queryTokens.length === 0) return FALLBACKS[0]
+
+  let bestScore = -1
+  let bestBM25Rule: Rule | null = null
+
+  for (const rule of PROCESSED_RULES) {
+    let score = 0
+    const docLen = rule.docTokens.length
+
+    // Count term frequencies in rule patterns specifically (given double weight)
+    const patternTokens = tokenize(rule.patterns.join(" "))
+
+    for (const qToken of queryTokens) {
+      const idf = calculateIDF(qToken)
+      if (idf <= 0) continue
+
+      // Frequency in full doc tokens
+      const fDoc = rule.docTokens.filter((t) => t === qToken).length
+      // Frequency boost if it appears in exact pattern list
+      const fPattern = patternTokens.filter((t) => t === qToken).length * 2.5
+
+      const tf = fDoc + fPattern
+      if (tf === 0) continue
+
+      const termScore = idf * ((tf * (K1 + 1)) / (tf + K1 * (1 - B + B * (docLen / avgDocLength))))
+      score += termScore
+    }
+
+    if (score > bestScore) {
+      bestScore = score
+      bestBM25Rule = rule
+    }
+  }
+
+  // Threshold check for BM25 score relevance
+  if (bestBM25Rule && bestScore > 0.4) {
+    return bestBM25Rule.response
+  }
+
+  // 3. Fallback: cycle deterministically on input length
   return FALLBACKS[norm.length % FALLBACKS.length]
 }
 
