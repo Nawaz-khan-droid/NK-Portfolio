@@ -55,11 +55,6 @@ const projects: Project[] = [
     embedUrl: "https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7485063589628645376?compact=1",
     icon: MonitorSmartphone,
     category: "AI / Voice",
-    screenshots: [
-      "/NK-Portfolio/projects/jarvis-demo.png",
-      "/NK-Portfolio/projects/jarvis-weather.png",
-      "/NK-Portfolio/projects/jarvis-veronica.png",
-    ],
   },
   {
     title: "Talvex",
