@@ -6,7 +6,8 @@ import { SectionHeading } from "./section-heading"
 import { ScrollReveal, StaggerContainer, StaggerItem } from "./scroll-reveal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ExternalLink, Github, MonitorSmartphone, Search, Brain, Briefcase, FileText, Headphones, Play, X } from "lucide-react"
+import Image from "next/image"
+import { ExternalLink, Github, MonitorSmartphone, Search, Brain, Briefcase, FileText, Headphones, Play, X, ChevronLeft, ChevronRight } from "lucide-react"
 
 interface Project {
   title: string
@@ -19,6 +20,7 @@ interface Project {
   embedUrl?: string
   icon: React.ElementType
   category: string
+  screenshots?: string[] // optional preview images
 }
 
 const projects: Project[] = [
@@ -48,11 +50,16 @@ const projects: Project[] = [
     highlights: ["Dual personas with cross-session memory", "20 tools: weather, search, email, reminders", "Cloud-first + local ONNX fallback for resilience"],
     tech: ["Python", "FastAPI", "React", "Groq", "Deepgram", "LiveKit"],
     github: "https://github.com/Nawaz-khan-droid/Personal-AI-Assistant",
-    demo: "https://www.linkedin.com/posts/nawaz-n-khan_ai-voiceai-react-activity-7485063589628645376-xxxx",
+    demo: "https://www.linkedin.com/posts/nawaz-n-khan_ai-machinelearning-python-ugcPost-7485063589628645376-avba/",
     demoLabel: "Watch Demo",
     embedUrl: "https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7485063589628645376?compact=1",
     icon: MonitorSmartphone,
     category: "AI / Voice",
+    screenshots: [
+      "/NK-Portfolio/projects/jarvis-demo.png",
+      "/NK-Portfolio/projects/jarvis-weather.png",
+      "/NK-Portfolio/projects/jarvis-veronica.png",
+    ],
   },
   {
     title: "Talvex",
@@ -85,6 +92,13 @@ const projects: Project[] = [
 
 export function Projects() {
   const [activeEmbed, setActiveEmbed] = useState<{ title: string; embedUrl: string; linkedinUrl?: string } | null>(null)
+  const [screenshotIndex, setScreenshotIndex] = useState<Record<string, number>>({})
+
+  const getScreenshotIdx = (title: string) => screenshotIndex[title] ?? 0
+  const nextScreenshot = (title: string, len: number) =>
+    setScreenshotIndex((prev) => ({ ...prev, [title]: ((prev[title] ?? 0) + 1) % len }))
+  const prevScreenshot = (title: string, len: number) =>
+    setScreenshotIndex((prev) => ({ ...prev, [title]: ((prev[title] ?? 0) - 1 + len) % len }))
 
   return (
     <section id="projects" className="py-20 md:py-28 bg-muted/30" aria-label="Projects portfolio">
@@ -95,7 +109,10 @@ export function Projects() {
         />
 
         <StaggerContainer className="grid gap-5 md:grid-cols-2" role="list" aria-label="Project cards">
-          {projects.map((project) => (
+          {projects.map((project) => {
+            const ssLen = project.screenshots?.length ?? 0
+            const ssIdx = getScreenshotIdx(project.title)
+            return (
             <StaggerItem key={project.title}>
               <div className="group h-full p-5 rounded-xl border border-border bg-card hover:border-primary/30 hover:shadow-md transition-all duration-300 flex flex-col" role="listitem">
                 {/* Header */}
@@ -111,6 +128,49 @@ export function Projects() {
                     <p className="text-xs text-primary font-medium">{project.tagline}</p>
                   </div>
                 </div>
+
+                {/* Screenshot carousel — only shown when screenshots exist */}
+                {project.screenshots && ssLen > 0 && (
+                  <div className="relative mt-3 rounded-lg overflow-hidden border border-border bg-black aspect-video">
+                    <Image
+                      src={project.screenshots[ssIdx]}
+                      alt={`${project.title} screenshot ${ssIdx + 1}`}
+                      fill
+                      className="object-cover object-top"
+                      unoptimized
+                    />
+                    {ssLen > 1 && (
+                      <>
+                        <button
+                          onClick={() => prevScreenshot(project.title, ssLen)}
+                          className="absolute left-1.5 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-0.5 transition-colors"
+                          aria-label="Previous screenshot"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => nextScreenshot(project.title, ssLen)}
+                          className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-0.5 transition-colors"
+                          aria-label="Next screenshot"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </button>
+                        <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-1">
+                          {project.screenshots.map((_, i) => (
+                            <button
+                              key={i}
+                              onClick={() => setScreenshotIndex((prev) => ({ ...prev, [project.title]: i }))}
+                              className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                                i === ssIdx ? "bg-white" : "bg-white/40"
+                              }`}
+                              aria-label={`Screenshot ${i + 1}`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
 
                 {/* Highlights — bullet points, scannable */}
                 <ul className="mt-3 space-y-1 flex-1">
@@ -164,7 +224,7 @@ export function Projects() {
                 </div>
               </div>
             </StaggerItem>
-          ))}
+          )})}
         </StaggerContainer>
       </div>
 
